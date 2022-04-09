@@ -85,11 +85,11 @@ body {
 
 @keyframes lds-ellipsis1 {
     0% {
-        transform: scale(1);
+        transform: scale(0);
     }
 
     100% {
-        transform: scale(0);
+        transform: scale(1);
     }
 }
 
@@ -105,11 +105,11 @@ body {
 
 @keyframes lds-ellipsis3 {
     0% {
-        transform: scale(0);
+        transform: scale(1);
     }
 
     100% {
-        transform: scale(1);
+        transform: scale(0);
     }
 }
 /* Fim Preloader */
