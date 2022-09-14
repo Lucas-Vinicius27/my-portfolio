@@ -374,4 +374,11 @@ form.on('submit', function (e) {
 	}
 });
 
+	const birthday = new Date('09/27/1997');
+	const current_date = Date.now();
+	const ageDifMs = current_date - birthday;
+	const ageDate = new Date(ageDifMs); // miliseconds from epoch
+	const years_old = Math.abs(ageDate.getUTCFullYear() - 1970);
+
+	document.getElementById('years_old').innerText = years_old;
 })(jQuery)
