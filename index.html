@@ -8,6 +8,19 @@
     <meta name="description" content="Lucas Santos portfólio">
     <meta name="author" content="Lucas Santos">
     <title>My Portfólio</title>
+    <!-- Aplica o tema salvo (claro/escuro) antes da página ser desenhada, evitando o "piscar" do tema claro -->
+    <script>
+        (function () {
+            var theme = null;
+            try {
+                theme = localStorage.getItem('theme');
+            } catch (e) {}
+            if (theme !== 'light' && theme !== 'dark') {
+                theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +49,7 @@
     </div>
     <!-- Fim Preloader -->
     <!-- Inicio Main -->
-    <main id="main-wrapper">
+    <div id="main-wrapper">
         <!-- Inicio Header -->
         <header id="header" class="sticky-top">
             <!-- Inicio Navbar -->
@@ -69,11 +82,14 @@
                                 <a class="nav-link smooth-scroll" href="#projects">Projetos</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#testimonial">Depoimentos</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link smooth-scroll" href="#contact">Contato</a>
                             </li>
                         </ul>
                     </div>
-                    <ul class="social-icons social-icons-muted social-icons-sm mt-lg-auto ms-auto ms-lg-0 d-flex">
+                    <ul class="social-icons social-icons-muted social-icons-sm mt-lg-auto ms-auto ms-lg-0 d-none d-sm-flex">
                         <li class="social-icons-facebook">
                             <a data-bs-toggle="tooltip" title="Facebook"
                                 href="https://web.facebook.com/lucas.vinicius.79219754" target="_blank">
@@ -100,6 +116,16 @@
                             </a>
                         </li>
                     </ul>
+                    <!-- Inicio Botão de Tema -->
+                    <button id="theme-switch" class="theme-switch ms-auto ms-sm-3 ms-lg-0 mt-lg-3" type="button" role="switch"
+                        aria-checked="false" aria-label="Tema escuro" data-bs-toggle="tooltip" title="Tema claro / escuro">
+                        <span class="theme-switch-track" aria-hidden="true">
+                            <i class="fas fa-sun theme-switch-icon theme-switch-icon-sun"></i>
+                            <i class="fas fa-moon theme-switch-icon theme-switch-icon-moon"></i>
+                            <span class="theme-switch-thumb"></span>
+                        </span>
+                    </button>
+                    <!-- Fim Botão de Tema -->
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-nav">
                         <span></span><span></span><span></span>
                     </button>
@@ -247,7 +273,7 @@
                         <div class="col-lg-11 mx-auto">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="featured-box style-3 mb-5">
+                                    <div class="featured-box style-3 mb-5 mb-md-0">
                                         <div class="featured-box-icon text-primary bg-white shadow-sm rounded">
                                             <i class="fas fa-desktop"></i>
                                         </div>
@@ -260,7 +286,7 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="featured-box style-3 mb-5">
+                                    <div class="featured-box style-3 mb-0">
                                         <div class="featured-box-icon text-primary bg-white shadow-sm rounded">
                                             <i class="fas fa-server"></i>
                                         </div>
@@ -417,17 +443,354 @@
                             <a href="" data-filter=".mixed" class="nav-link">Misto</a>
                         </li>
                     </ul>
-                    <div class="portfolio popup-ajax-gallery"></div>
+                    <div class="portfolio popup-ajax-gallery">
+                        <div class="row portfolio-filter g-4">
+                            <div class="col-sm-6 col-lg-4 back">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 1">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-1.html" aria-label="Ver detalhes do Projeto 1"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 1</h5>
+                                                <span class="text-light">Back End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 front">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 2">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-2.html" aria-label="Ver detalhes do Projeto 2"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 2</h5>
+                                                <span class="text-light">Front End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 mixed">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 3">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-3.html" aria-label="Ver detalhes do Projeto 3"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 3</h5>
+                                                <span class="text-light">Misto</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 back">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 4">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-4.html" aria-label="Ver detalhes do Projeto 4"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 4</h5>
+                                                <span class="text-light">Back End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 front">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 5">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-5.html" aria-label="Ver detalhes do Projeto 5"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 5</h5>
+                                                <span class="text-light">Front End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 mixed">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 6">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-6.html" aria-label="Ver detalhes do Projeto 6"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 6</h5>
+                                                <span class="text-light">Misto</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
             <!-- Fim Projetos -->
+            <!-- Inicio Depoimentos -->
+            <section id="testimonial" class="section">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0">Depoimentos</h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            O que dizem
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="owl-carousel owl-theme" data-loop="true" data-nav="false" data-autoplay="false"
+                        data-margin="25" data-stagepadding="0" data-slideby="1" data-items-xs="1" data-items-sm="1"
+                        data-items-md="1" data-items-lg="2">
+                        <div class="item">
+                            <div class="bg-light rounded p-5">
+                                <div class="d-flex align-items-center mt-auto mb-4">
+                                    <img class="img-fluid rounded-circle border d-inline-block w-auto" src="images/testimonial/avatar.svg" alt="">
+                                    <p class="ms-3 mb-0">
+                                        <strong class="d-block text-dark fw-600">Nome da Pessoa</strong>
+                                        <span class="text-muted fw-500">Gestor(a) na Empresa</span>
+                                    </p>
+                                </div>
+                                <p class="text-dark fw-500 mb-4">
+                                    “Escreva aqui o depoimento de um gestor sobre o seu trabalho, destacando
+                                    as suas qualidades técnicas e profissionais.”
+                                </p>
+                                <span class="text-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="bg-light rounded p-5">
+                                <div class="d-flex align-items-center mt-auto mb-4">
+                                    <img class="img-fluid rounded-circle border d-inline-block w-auto" src="images/testimonial/avatar.svg" alt="">
+                                    <p class="ms-3 mb-0">
+                                        <strong class="d-block text-dark fw-600">Nome da Pessoa</strong>
+                                        <span class="text-muted fw-500">Colega de equipe</span>
+                                    </p>
+                                </div>
+                                <p class="text-dark fw-500 mb-4">
+                                    “Escreva aqui o depoimento de um colega de trabalho sobre como é
+                                    trabalhar com você no dia a dia.”
+                                </p>
+                                <span class="text-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="bg-light rounded p-5">
+                                <div class="d-flex align-items-center mt-auto mb-4">
+                                    <img class="img-fluid rounded-circle border d-inline-block w-auto" src="images/testimonial/avatar.svg" alt="">
+                                    <p class="ms-3 mb-0">
+                                        <strong class="d-block text-dark fw-600">Nome da Pessoa</strong>
+                                        <span class="text-muted fw-500">Cliente</span>
+                                    </p>
+                                </div>
+                                <p class="text-dark fw-500 mb-4">
+                                    “Escreva aqui o depoimento de um cliente sobre um projeto que você
+                                    entregou para ele.”
+                                </p>
+                                <span class="text-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Depoimentos -->
+            <!-- Inicio Contato -->
+            <section id="contact" class="section bg-light">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0">Contato</h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            Entre em contato
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="row gy-5">
+                        <div class="col-md-4 col-xl-3 order-1 order-md-0 text-center text-md-start">
+                            <h2 class="mb-3 text-5 text-uppercase">Endereço</h2>
+                            <p class="text-3 mb-4">
+                                São Paulo - SP,<br>
+                                Brasil
+                            </p>
+                            <!-- Descomente e preencha para exibir seu telefone/WhatsApp -->
+                            <!--
+                            <p class="text-3 mb-1">
+                                <span class="text-primary text-4 me-2"><i class="fas fa-phone"></i></span>(11) 00000-0000
+                            </p>
+                            -->
+                            <p class="text-3 text-break mb-4">
+                                <span class="text-primary text-4 me-2"><i class="fas fa-envelope"></i></span>lucas_vfsantos@hotmail.com
+                            </p>
+                            <h2 class="mb-3 text-5 text-uppercase">Me siga</h2>
+                            <ul class="social-icons justify-content-center justify-content-md-start">
+                                <li class="social-icons-facebook">
+                                    <a data-bs-toggle="tooltip" title="Facebook"
+                                        href="https://web.facebook.com/lucas.vinicius.79219754" target="_blank">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                </li>
+                                <li class="social-icons-instagram">
+                                    <a data-bs-toggle="tooltip" title="Instagram"
+                                        href="https://www.instagram.com/luvinisantos/" target="_blank">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                </li>
+                                <li class="social-icons-linkedin">
+                                    <a data-bs-toggle="tooltip" title="LinkedIn"
+                                        href="https://www.linkedin.com/in/lucas-vinicius-ferreira-dos-santos-247863186"
+                                        target="_blank">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </li>
+                                <li class="social-icons-github">
+                                    <a data-bs-toggle="tooltip" title="GitHub"
+                                        href="https://github.com/Lucas-Vinicius27" target="_blank">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-8 col-xl-9 order-0 order-md-1">
+                            <h2 class="mb-3 text-5 text-uppercase text-center text-md-start">Envie uma mensagem</h2>
+                            <form id="contact-form" action="" method="post">
+                                <div class="row g-4">
+                                    <div class="col-xl-6">
+                                        <input name="name" type="text" class="form-control" required placeholder="Nome" aria-label="Nome">
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <input name="email" type="email" class="form-control" required placeholder="E-mail" aria-label="E-mail">
+                                    </div>
+                                    <div class="col-12">
+                                        <textarea name="form-message" class="form-control" rows="5" required
+                                            placeholder="Conte-me mais sobre o que você precisa..." aria-label="Mensagem"></textarea>
+                                    </div>
+                                </div>
+                                <p class="text-center mt-4 mb-0">
+                                    <button id="submit-btn" class="btn btn-primary rounded-pill d-inline-flex" type="submit">Enviar Mensagem</button>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Contato -->
         </div>
         <!-- Fim Content -->
-    </main>
+        <!-- Inicio Footer -->
+        <footer id="footer" class="section">
+            <div class="container px-lg-5">
+                <div class="row">
+                    <div class="col-lg-6 text-center text-lg-start">
+                        <p class="mb-3 mb-lg-0">
+                            Copyright &copy; <span id="current-year">2026</span>
+                            <a href="#home" class="fw-500 smooth-scroll">Lucas Santos</a>. Todos os direitos reservados.
+                        </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="nav nav-separator justify-content-center justify-content-lg-end">
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#terms-policy" href="#">Termos e Política</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#disclaimer" href="#">Aviso Legal</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Fim Footer -->
+    </div>
     <!-- Fim Main -->
-    <!-- Inicio Footer -->
-    <footer></footer>
-    <!-- Fim Footer -->
+    <!-- Inicio Voltar ao Topo -->
+    <a id="back-to-top" class="rounded-circle" data-bs-toggle="tooltip" title="Voltar ao topo" href="#" aria-label="Voltar ao topo">
+        <i class="fa fa-chevron-up"></i>
+    </a>
+    <!-- Fim Voltar ao Topo -->
+    <!-- Inicio Modal Termos e Política -->
+    <div id="terms-policy" class="modal fade" tabindex="-1" aria-labelledby="terms-policy-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="terms-policy-title" class="modal-title">Termos e Política</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p>
+                        Este site é um portfólio pessoal, criado para apresentar meus projetos, minhas experiências
+                        e minhas habilidades como desenvolvedor.
+                    </p>
+                    <h3 class="mb-3 mt-4">Termos de Uso</h3>
+                    <p>
+                        Você pode navegar e compartilhar os links deste site livremente. Os textos, imagens e
+                        códigos aqui apresentados não devem ser copiados ou redistribuídos como se fossem seus.
+                    </p>
+                    <h3 class="mb-3 mt-4">Política de Privacidade</h3>
+                    <p>
+                        As informações enviadas pelo formulário de contato são usadas apenas para responder
+                        à sua mensagem.
+                    </p>
+                    <ol class="lh-lg">
+                        <li>São coletados somente os dados que você informa no formulário de contato (nome, e-mail e mensagem).</li>
+                        <li>Seus dados não são vendidos, alugados ou compartilhados com terceiros.</li>
+                        <li>
+                            O formulário é protegido pelo Google reCAPTCHA, sujeito à
+                            <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidade</a> e aos
+                            <a href="https://policies.google.com/terms" target="_blank">Termos de Serviço</a> do Google.
+                        </li>
+                        <li>A sua preferência de tema (claro ou escuro) fica salva apenas no seu navegador.</li>
+                        <li>Você pode pedir a exclusão dos seus dados a qualquer momento pelo e-mail lucas_vfsantos@hotmail.com.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal Termos e Política -->
+    <!-- Inicio Modal Aviso Legal -->
+    <div id="disclaimer" class="modal fade" tabindex="-1" aria-labelledby="disclaimer-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="disclaimer-title" class="modal-title">Direitos Autorais e Aviso Legal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p>
+                        Todo o conteúdo deste site pertence a Lucas Santos, exceto quando indicado o contrário.
+                    </p>
+                    <ul class="lh-lg">
+                        <li>Os projetos apresentados foram desenvolvidos por mim, individualmente ou em equipe.</li>
+                        <li>Marcas, logotipos e nomes de terceiros pertencem aos seus respectivos donos.</li>
+                        <li>As informações deste site podem ser atualizadas a qualquer momento, sem aviso prévio.</li>
+                        <li>Links para sites externos são oferecidos apenas por conveniência e não sou responsável pelo conteúdo deles.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal Aviso Legal -->
     <!-- JavaScript -->
     <script src="vendor/jquery/jquery.min.js"></script>
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>

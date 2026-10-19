@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="450" viewBox="0 0 600 450">
+    <!-- Imagem provisória: substitua por uma captura de tela do projeto (proporção 4:3) -->
+    <rect width="600" height="450" fill="#2a2f35"/>
+    <g fill="none" stroke="#20c997" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="245,165 190,220 245,275"/>
+        <polyline points="355,165 410,220 355,275"/>
+        <line x1="322" y1="150" x2="278" y2="290"/>
+    </g>
+    <text x="300" y="355" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="22" fill="#adb5bd">Imagem do projeto</text>
+</svg>

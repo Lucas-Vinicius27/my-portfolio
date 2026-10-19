@@ -312,7 +312,7 @@ form.on('submit', function (e) {
 					data: gdata, 		  // serialize form data
 					beforeSend: function () {
 						submit.attr("disabled", "disabled");
-						var loadingText = '<span role="status" aria-hidden="true" class="spinner-border spinner-border-sm align-self-center me-2"></span>Sending.....'; // change submit button text
+						var loadingText = '<span role="status" aria-hidden="true" class="spinner-border spinner-border-sm align-self-center me-2"></span>Enviando...'; // change submit button text
 						if (submit.html() !== loadingText) {
 							submit.data('original-text', submit.html());
 							submit.html(loadingText);
@@ -345,7 +345,7 @@ form.on('submit', function (e) {
 			data: form.serialize(), // serialize form data
 			beforeSend: function () {
 				submit.attr("disabled", "disabled");
-				var loadingText = '<span role="status" aria-hidden="true" class="spinner-border spinner-border-sm align-self-center me-2"></span>Sending.....'; // change submit button text
+				var loadingText = '<span role="status" aria-hidden="true" class="spinner-border spinner-border-sm align-self-center me-2"></span>Enviando...'; // change submit button text
 				if (submit.html() !== loadingText) {
 					submit.data('original-text', submit.html());
 					submit.html(loadingText);
@@ -381,4 +381,57 @@ form.on('submit', function (e) {
 	const years_old = Math.abs(ageDate.getUTCFullYear() - 1970);
 
 	document.getElementById('years_old').innerText = years_old;
+
+	// Ano atual no rodapé
+	document.getElementById('current-year').innerText = new Date().getFullYear();
+
+/*------------------------
+   Tema claro / escuro
+   (o tema inicial é aplicado por um script no <head> do index.html)
+-------------------------- */
+	var root = document.documentElement;
+	var themeSwitch = document.getElementById('theme-switch');
+
+	function getSavedTheme() {
+		try {
+			return localStorage.getItem('theme');
+		} catch (e) {
+			return null;
+		}
+	}
+
+	function applyTheme(theme) {
+		root.setAttribute('data-theme', theme);
+		if (themeSwitch) {
+			themeSwitch.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
+		}
+	}
+
+	applyTheme(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');
+
+	if (themeSwitch) {
+		themeSwitch.addEventListener('click', function () {
+			var newTheme = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+			applyTheme(newTheme);
+			try {
+				localStorage.setItem('theme', newTheme);
+			} catch (e) {}
+		});
+	}
+
+	// Enquanto o visitante não escolher um tema, acompanha o tema do sistema operacional
+	if (window.matchMedia) {
+		var darkSchemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+		var onSchemeChange = function (e) {
+			var saved = getSavedTheme();
+			if (saved !== 'light' && saved !== 'dark') {
+				applyTheme(e.matches ? 'dark' : 'light');
+			}
+		};
+		if (darkSchemeQuery.addEventListener) {
+			darkSchemeQuery.addEventListener('change', onSchemeChange);
+		} else if (darkSchemeQuery.addListener) {
+			darkSchemeQuery.addListener(onSchemeChange);
+		}
+	}
 })(jQuery)
