@@ -143,6 +143,8 @@ $(this).magnificPopup({
 		ajaxContentAdded: function() {
 			$(".owl-carousel").each(function (index) {
 			  var a = $(this);
+			  // Com uma imagem só, não gira o carrossel (evita deslizar para uma cópia da mesma imagem)
+			  var hasManyItems = a.children('.item').length > 1;
 			  if ($("html").attr("dir") == 'rtl') {
 		var rtlVal = true
 	}else{
@@ -150,11 +152,11 @@ $(this).magnificPopup({
     }
 	$(this).owlCarousel({
 		rtl: rtlVal,
-				autoplay: a.data('autoplay'),
+				autoplay: hasManyItems && a.data('autoplay'),
 				center: a.data('center'),
 				autoplayTimeout: a.data('autoplaytimeout'),
 				autoplayHoverPause: a.data('autoplayhoverpause'),
-				loop: a.data('loop'),
+				loop: hasManyItems && a.data('loop'),
 				speed: a.data('speed'),
 				nav: a.data('nav'),
 				dots: a.data('dots'),
@@ -226,6 +228,19 @@ $(".parallax").each(function () {
 $(this).parallaxie({
 	speed: 0.5,
 });
+});
+
+/*------------------------------------
+    Tempo de experiência
+    (fica antes do Counter, que lê o data-to quando a animação começa)
+-------------------------------------- */
+const careerStart = new Date('12/01/2019'); // início do estágio na DuoSystem
+const experienceDate = new Date(Date.now() - careerStart);
+const years_experience = Math.abs(experienceDate.getUTCFullYear() - 1970);
+
+document.querySelectorAll('.years-experience').forEach(function (el) {
+	el.textContent = years_experience;
+	el.setAttribute('data-to', years_experience);
 });
 
 /*------------------------------------

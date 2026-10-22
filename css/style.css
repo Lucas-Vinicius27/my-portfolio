@@ -2580,6 +2580,9 @@ hr {
 }
 
 .portfolio .portfolio-box .portfolio-img img {
+  width: 100%;
+  aspect-ratio: 1200 / 630;
+  object-fit: cover;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
 }
@@ -3834,15 +3837,16 @@ input:-internal-autofill-selected {
     color: #fff;
 }
 
+/* Mesma cor dos cards do Resumo, para os campos aparecerem com ou sem fundo bg-light */
 [data-theme="dark"] .form-control {
-    border-color: #232a31;
-    background-color: #232a31;
+    border-color: #111418;
+    background-color: #111418;
     color: #fff;
 }
 
 [data-theme="dark"] .form-control:focus {
     border-color: #80bdff;
-    background-color: #232a31;
+    background-color: #111418;
     color: #fff;
 }
 
