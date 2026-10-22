@@ -8,6 +8,135 @@ $(window).on('load', function () {
 	$('body').delay(333);
 });
 
+/*------------------------------------
+    Idioma (português / inglês)
+    O português fica escrito no HTML e o inglês em js/i18n-en.js.
+    O idioma inicial é escolhido pelo script no <head> do index.html.
+    A tradução acontece enquanto a tela de carregamento ainda cobre a página.
+-------------------------------------- */
+var I18N_EN = window.I18N_EN || {};
+var I18N_SELECTOR = '[data-i18n], [data-i18n-html], [data-i18n-attr]';
+
+// Textos dos popups dos projetos (botão de fechar, setas e erro de carregamento)
+var POPUP_TEXT = {
+	pt: {
+		tClose: 'Fechar (Esc)',
+		gallery: { tPrev: 'Anterior (seta para a esquerda)', tNext: 'Próximo (seta para a direita)', tCounter: '%curr% de %total%' },
+		ajax: { tError: '<a href="%url%">O conteúdo</a> não pôde ser carregado.' }
+	},
+	en: {
+		tClose: 'Close (Esc)',
+		gallery: { tPrev: 'Previous (Left arrow key)', tNext: 'Next (Right arrow key)', tCounter: '%curr% of %total%' },
+		ajax: { tError: '<a href="%url%">The content</a> could not be loaded.' }
+	}
+};
+
+function getLang() {
+	return document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'pt';
+}
+
+function getTranslation(key, lang, original) {
+	if (lang !== 'en') {
+		return original;
+	}
+	if (Object.prototype.hasOwnProperty.call(I18N_EN, key)) {
+		return I18N_EN[key];
+	}
+	console.warn('[idioma] Falta a tradução em inglês de "' + key + '" (js/i18n-en.js)');
+	return original;
+}
+
+// Depois que o tooltip do Bootstrap é criado, o "title" fica guardado em data-bs-original-title
+function getAttrName(el, attr) {
+	return attr === 'title' && el.hasAttribute('data-bs-original-title') ? 'data-bs-original-title' : attr;
+}
+
+function translateElement(el, lang) {
+	// Guarda o português na primeira vez, para poder voltar para ele depois
+	var saved = el._i18nOriginal || (el._i18nOriginal = { attrs: {} });
+
+	var textKey = el.getAttribute('data-i18n');
+	if (textKey) {
+		if (saved.text === undefined) {
+			saved.text = el.textContent;
+		}
+		el.textContent = getTranslation(textKey, lang, saved.text);
+	}
+
+	var htmlKey = el.getAttribute('data-i18n-html');
+	if (htmlKey) {
+		if (saved.html === undefined) {
+			saved.html = el.innerHTML;
+		}
+		el.innerHTML = getTranslation(htmlKey, lang, saved.html);
+	}
+
+	var attrList = el.getAttribute('data-i18n-attr');
+	if (attrList) {
+		attrList.split(',').forEach(function (pair) {
+			var parts = pair.split(':');
+			var attr = parts[0].trim();
+			var attrKey = (parts[1] || '').trim();
+			var name = getAttrName(el, attr);
+			if (saved.attrs[attr] === undefined) {
+				saved.attrs[attr] = el.getAttribute(name);
+			}
+			var value = getTranslation(attrKey, lang, saved.attrs[attr]);
+			if (value !== null) {
+				el.setAttribute(name, value);
+			}
+		});
+	}
+}
+
+function applyLanguage(lang, container) {
+	var elements = (container || document).querySelectorAll(I18N_SELECTOR);
+	Array.prototype.forEach.call(elements, function (el) {
+		translateElement(el, lang);
+	});
+}
+
+function applyPopupTexts(lang) {
+	if ($.magnificPopup) {
+		$.extend(true, $.magnificPopup.defaults, POPUP_TEXT[lang]);
+	}
+}
+
+function setLanguage(lang) {
+	var html = document.documentElement;
+	html.setAttribute('data-lang', lang);
+	html.setAttribute('lang', lang === 'en' ? 'en' : 'pt-br');
+	applyLanguage(lang);
+	applyPopupTexts(lang);
+	// Avisa outras partes da página (efeito de digitação, anos de experiência, formulário)
+	document.dispatchEvent(new CustomEvent('languagechange', { detail: { lang: lang } }));
+}
+
+// O HTML já vem em português: só precisa traduzir quando o idioma inicial for inglês
+if (getLang() === 'en') {
+	applyLanguage('en');
+}
+applyPopupTexts(getLang());
+
+var langSwitch = document.getElementById('lang-switch');
+if (langSwitch) {
+	langSwitch.addEventListener('click', function () {
+		var newLang = getLang() === 'en' ? 'pt' : 'en';
+		setLanguage(newLang);
+		try {
+			localStorage.setItem('lang', newLang);
+		} catch (e) {}
+		// Se o endereço tiver ?lang=, atualiza para recarregar no idioma escolhido
+		try {
+			var url = new URL(window.location.href);
+			if (url.searchParams.has('lang')) {
+				url.searchParams.set('lang', newLang);
+				window.history.replaceState(null, '', url.toString());
+			}
+		} catch (e) {}
+	});
+}
+
 
 // Header Sticky
 $(window).on('scroll',function() {
@@ -141,6 +270,10 @@ $(this).magnificPopup({
     },
 	callbacks: {
 		ajaxContentAdded: function() {
+			// O popup chega em português: traduz antes de aparecer
+			if (getLang() === 'en' && this.content) {
+				applyLanguage('en', this.content[0]);
+			}
 			$(".owl-carousel").each(function (index) {
 			  var a = $(this);
 			  // Com uma imagem só, não gira o carrossel (evita deslizar para uma cópia da mesma imagem)
@@ -238,10 +371,16 @@ const careerStart = new Date('12/01/2019'); // início do estágio na DuoSystem
 const experienceDate = new Date(Date.now() - careerStart);
 const years_experience = Math.abs(experienceDate.getUTCFullYear() - 1970);
 
-document.querySelectorAll('.years-experience').forEach(function (el) {
-	el.textContent = years_experience;
-	el.setAttribute('data-to', years_experience);
-});
+function fillExperience() {
+	document.querySelectorAll('.years-experience').forEach(function (el) {
+		el.textContent = years_experience;
+		el.setAttribute('data-to', years_experience);
+	});
+}
+
+fillExperience();
+// O texto do "Sobre" é recriado na troca de idioma
+document.addEventListener('languagechange', fillExperience);
 
 /*------------------------------------
     Counter
@@ -258,15 +397,27 @@ $(".counter").each(function () {
     Typed
 -------------------------------------- */
 
-$(".typed").each(function() {
-var typed = new Typed('.typed', {
-    stringsElement: '.typed-strings',
-	loop: true,
-	typeSpeed: 100,
-    backSpeed: 50,
-	backDelay: 1500,
-});
-});
+var typedInstance = null;
+
+function startTyped() {
+	if (!document.querySelector('.typed')) {
+		return;
+	}
+	if (typedInstance) {
+		typedInstance.destroy();
+	}
+	typedInstance = new Typed('.typed', {
+		stringsElement: '.typed-strings',
+		loop: true,
+		typeSpeed: 100,
+		backSpeed: 50,
+		backDelay: 1500,
+	});
+}
+
+startTyped();
+// Recomeça com as frases do novo idioma
+document.addEventListener('languagechange', startTyped);
 
 
 /*------------------------------------
@@ -316,16 +467,59 @@ $('#back-to-top').on("click", function() {
 	var CONTACT_NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}' ’.-]*$/u;
 	var CONTACT_EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i;
 	var CONTACT_LINK_RE = /https?:\/\/|www\./gi;
-	var CONTACT_ERRORS = {
-		validation: 'Confira os dados do formulário e tente novamente.',
-		captcha: 'Não foi possível confirmar que você não é um robô. Aguarde a verificação e tente novamente.',
-		unavailable: 'O formulário está temporariamente indisponível.',
-		server: 'Não foi possível enviar sua mensagem agora. Tente novamente mais tarde.',
-		tooMany: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.',
-		network: 'Não foi possível conectar. Verifique sua internet e tente novamente.',
-		captchaMissing: 'Não foi possível carregar a verificação anti-robô. Recarregue a página e tente novamente.',
-		captchaPending: 'Aguarde a verificação anti-robô terminar e tente novamente.'
+	// {nome} é trocado pelo valor na hora de mostrar a mensagem
+	var CONTACT_TEXT = {
+		pt: {
+			send: 'Enviar Mensagem',
+			sending: 'Enviando...',
+			wait: 'Aguarde {seconds}s',
+			success: 'Mensagem enviada! Obrigado pelo contato, respondo assim que possível.',
+			emailIntro: ' Se preferir, me escreva em ',
+			nameLength: 'O nome deve ter entre {min} e {max} caracteres.',
+			nameLetters: 'Use apenas letras no nome.',
+			email: 'Informe um e-mail válido, como nome@exemplo.com.',
+			messageMin: 'A mensagem deve ter pelo menos {min} caracteres.',
+			messageMax: 'A mensagem deve ter no máximo {max} caracteres.',
+			messageLinks: 'A mensagem pode ter no máximo {max} links.',
+			validation: 'Confira os dados do formulário e tente novamente.',
+			captcha: 'Não foi possível confirmar que você não é um robô. Aguarde a verificação e tente novamente.',
+			unavailable: 'O formulário está temporariamente indisponível.',
+			server: 'Não foi possível enviar sua mensagem agora. Tente novamente mais tarde.',
+			tooMany: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.',
+			network: 'Não foi possível conectar. Verifique sua internet e tente novamente.',
+			captchaMissing: 'Não foi possível carregar a verificação anti-robô. Recarregue a página e tente novamente.',
+			captchaPending: 'Aguarde a verificação anti-robô terminar e tente novamente.'
+		},
+		en: {
+			send: 'Send Message',
+			sending: 'Sending...',
+			wait: 'Wait {seconds}s',
+			success: "Message sent! Thanks for reaching out, I'll get back to you as soon as possible.",
+			emailIntro: ' If you prefer, email me at ',
+			nameLength: 'Your name must be between {min} and {max} characters long.',
+			nameLetters: 'Use only letters in your name.',
+			email: 'Enter a valid email address, like name@example.com.',
+			messageMin: 'Your message must be at least {min} characters long.',
+			messageMax: 'Your message must be at most {max} characters long.',
+			messageLinks: 'Your message can contain at most {max} links.',
+			validation: 'Please check the form fields and try again.',
+			captcha: "We couldn't confirm that you're not a robot. Wait for the check to finish and try again.",
+			unavailable: 'The form is temporarily unavailable.',
+			server: "Your message couldn't be sent right now. Please try again later.",
+			tooMany: 'Too many attempts in a short time. Wait a few minutes and try again.',
+			network: "Couldn't connect. Check your internet connection and try again.",
+			captchaMissing: "The anti-robot check couldn't be loaded. Reload the page and try again.",
+			captchaPending: 'Wait for the anti-robot check to finish and try again.'
+		}
 	};
+
+	function contactText(key, values) {
+		var text = CONTACT_TEXT[getLang()][key] || CONTACT_TEXT.pt[key];
+		Object.keys(values || {}).forEach(function (name) {
+			text = text.replace('{' + name + '}', values[name]);
+		});
+		return text;
+	}
 
 	var contactForm = document.getElementById('contact-form');
 	if (contactForm) {
@@ -343,12 +537,15 @@ $('#back-to-top').on("click", function() {
 			website: form.elements.namedItem('website') // campo armadilha
 		};
 		var fallbackEmail = form.getAttribute('data-fallback-email') || '';
-		var originalLabel = submitBtn.innerHTML;
 		var readyAt = Date.now();
 		var sending = false;
 		var cooldownTimer = null;
 		var widgetId = null;
 		var widgetTheme = null;
+		var widgetLang = null;
+		var lastStatus = null; // última mensagem mostrada, para trocar de idioma junto com a página
+
+		submitBtn.textContent = contactText('send');
 
 		/* Verificação anti-robô (Cloudflare Turnstile) */
 		function currentTheme() {
@@ -363,11 +560,12 @@ $('#back-to-top').on("click", function() {
 				window.turnstile.remove(widgetId);
 			}
 			widgetTheme = currentTheme();
+			widgetLang = getLang();
 			widgetId = window.turnstile.render(captchaBox, {
 				sitekey: captchaBox.getAttribute('data-sitekey'),
 				action: 'contact',
 				theme: widgetTheme,
-				language: 'pt-br',
+				language: widgetLang === 'en' ? 'en' : 'pt-br',
 				'error-callback': function (code) {
 					console.warn('Turnstile: erro ' + code);
 					return true;
@@ -381,9 +579,21 @@ $('#back-to-top').on("click", function() {
 			renderCaptcha();
 		}
 
-		// O widget não troca de tema sozinho: é recriado com o tema novo
+		// O widget não troca de tema nem de idioma sozinho: é recriado
 		document.addEventListener('themechange', function () {
 			if (widgetId !== null && !sending && currentTheme() !== widgetTheme) {
+				renderCaptcha();
+			}
+		});
+
+		document.addEventListener('languagechange', function () {
+			if (!sending && cooldownTimer === null) {
+				submitBtn.textContent = contactText('send');
+			}
+			if (lastStatus) {
+				showStatus(lastStatus.type, lastStatus.key, lastStatus.withEmail);
+			}
+			if (widgetId !== null && !sending && getLang() !== widgetLang) {
 				renderCaptcha();
 			}
 		});
@@ -398,23 +608,23 @@ $('#back-to-top').on("click", function() {
 
 			var nameError = '';
 			if (name.length < limits.nameMin || name.length > limits.nameMax) {
-				nameError = 'O nome deve ter entre ' + limits.nameMin + ' e ' + limits.nameMax + ' caracteres.';
+				nameError = contactText('nameLength', { min: limits.nameMin, max: limits.nameMax });
 			} else if (!CONTACT_NAME_RE.test(name)) {
-				nameError = 'Use apenas letras no nome.';
+				nameError = contactText('nameLetters');
 			}
 
 			var emailError = '';
 			if (email.length > limits.emailMax || email.split('@')[0].length > 64 || !CONTACT_EMAIL_RE.test(email)) {
-				emailError = 'Informe um e-mail válido, como nome@exemplo.com.';
+				emailError = contactText('email');
 			}
 
 			var messageError = '';
 			if (message.length < limits.messageMin) {
-				messageError = 'A mensagem deve ter pelo menos ' + limits.messageMin + ' caracteres.';
+				messageError = contactText('messageMin', { min: limits.messageMin });
 			} else if (message.length > limits.messageMax) {
-				messageError = 'A mensagem deve ter no máximo ' + limits.messageMax + ' caracteres.';
+				messageError = contactText('messageMax', { max: limits.messageMax });
 			} else if (links.length > limits.maxLinks) {
-				messageError = 'A mensagem pode ter no máximo ' + limits.maxLinks + ' links.';
+				messageError = contactText('messageLinks', { max: limits.maxLinks });
 			}
 
 			fields.name.setCustomValidity(nameError);
@@ -431,32 +641,38 @@ $('#back-to-top').on("click", function() {
 		});
 
 		/* Mensagens de retorno (sempre como texto, nunca como HTML) */
-		function showStatus(type, text, withEmail) {
+		function showStatus(type, key, withEmail) {
 			var box = document.createElement('div');
 			box.className = 'alert alert-' + type + ' text-center mb-0';
-			box.appendChild(document.createTextNode(text));
+			box.appendChild(document.createTextNode(contactText(key)));
 			if (withEmail && fallbackEmail) {
 				var link = document.createElement('a');
 				link.className = 'alert-link';
 				link.href = 'mailto:' + fallbackEmail;
 				link.textContent = fallbackEmail;
-				box.appendChild(document.createTextNode(' Se preferir, me escreva em '));
+				box.appendChild(document.createTextNode(contactText('emailIntro')));
 				box.appendChild(link);
 				box.appendChild(document.createTextNode('.'));
 			}
 			statusBox.textContent = '';
 			statusBox.appendChild(box);
+			lastStatus = { type: type, key: key, withEmail: withEmail };
+		}
+
+		function clearStatus() {
+			statusBox.textContent = '';
+			lastStatus = null;
 		}
 
 		function showError(status, code) {
 			if (status === 429) {
-				showStatus('warning', CONTACT_ERRORS.tooMany);
+				showStatus('warning', 'tooMany');
 			} else if (code === 'validation' || code === 'captcha') {
-				showStatus('danger', CONTACT_ERRORS[code]);
+				showStatus('danger', code);
 			} else if (code === 'unavailable') {
-				showStatus('danger', CONTACT_ERRORS.unavailable, true);
+				showStatus('danger', 'unavailable', true);
 			} else {
-				showStatus('danger', CONTACT_ERRORS.server, true);
+				showStatus('danger', 'server', true);
 			}
 		}
 
@@ -464,9 +680,12 @@ $('#back-to-top').on("click", function() {
 		function setSending(isSending) {
 			sending = isSending;
 			submitBtn.disabled = isSending;
-			submitBtn.innerHTML = isSending
-				? '<span class="spinner-border spinner-border-sm align-self-center me-2" aria-hidden="true"></span>Enviando...'
-				: originalLabel;
+			if (isSending) {
+				submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm align-self-center me-2" aria-hidden="true"></span>';
+				submitBtn.appendChild(document.createTextNode(contactText('sending')));
+			} else {
+				submitBtn.textContent = contactText('send');
+			}
 		}
 
 		function startCooldown(ms) {
@@ -480,10 +699,10 @@ $('#back-to-top').on("click", function() {
 					clearInterval(cooldownTimer);
 					cooldownTimer = null;
 					submitBtn.disabled = false;
-					submitBtn.innerHTML = originalLabel;
+					submitBtn.textContent = contactText('send');
 					return;
 				}
-				submitBtn.textContent = 'Aguarde ' + secondsLeft + 's';
+				submitBtn.textContent = contactText('wait', { seconds: secondsLeft });
 			}
 
 			cooldownTimer = setInterval(tick, 1000);
@@ -516,18 +735,18 @@ $('#back-to-top').on("click", function() {
 			if (sending || cooldownTimer !== null) {
 				return;
 			}
-			statusBox.textContent = '';
+			clearStatus();
 
 			if (!validateFields()) {
 				return;
 			}
 			if (!window.turnstile) {
-				showStatus('danger', CONTACT_ERRORS.captchaMissing, true);
+				showStatus('danger', 'captchaMissing', true);
 				return;
 			}
 			var token = widgetId !== null ? window.turnstile.getResponse(widgetId) : '';
 			if (!token) {
-				showStatus('warning', CONTACT_ERRORS.captchaPending);
+				showStatus('warning', 'captchaPending');
 				return;
 			}
 
@@ -567,13 +786,13 @@ $('#back-to-top').on("click", function() {
 					if (result.ok) {
 						form.reset();
 						saveLastSent();
-						showStatus('success', 'Mensagem enviada! Obrigado pelo contato, respondo assim que possível.');
+						showStatus('success', 'success');
 					} else {
 						showError(result.status, result.error);
 					}
 					return result.ok;
 				}, function () {
-					showStatus('danger', CONTACT_ERRORS.network);
+					showStatus('danger', 'network');
 					return false;
 				})
 				.then(function (sent) {
