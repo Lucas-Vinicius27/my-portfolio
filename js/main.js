@@ -291,88 +291,289 @@ $('#back-to-top').on("click", function() {
 
 
 /*------------------------
-   Contact Form
+   Formulário de Contato
+   Envia para a função da Vercel (api/contact.js), que confere tudo de novo no servidor.
+   As regras de validação são as mesmas do servidor: mantenha as duas iguais.
 -------------------------- */
-var form = $('#contact-form'); // contact form
-var submit = $('#submit-btn'); // submit button
+	var CONTACT_LIMITS = { nameMin: 2, nameMax: 100, emailMax: 254, messageMin: 10, messageMax: 3000, maxLinks: 3 };
+	var CONTACT_COOLDOWN_MS = 60000; // espera depois de um envio com sucesso
+	var CONTACT_TIMEOUT_MS = 20000;
+	var CONTACT_NAME_RE = /^[\p{L}\p{M}][\p{L}\p{M}' ’.-]*$/u;
+	var CONTACT_EMAIL_RE = /^[^\s@<>()[\]\\,;:"]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}$/i;
+	var CONTACT_LINK_RE = /https?:\/\/|www\./gi;
+	var CONTACT_ERRORS = {
+		validation: 'Confira os dados do formulário e tente novamente.',
+		captcha: 'Não foi possível confirmar que você não é um robô. Aguarde a verificação e tente novamente.',
+		unavailable: 'O formulário está temporariamente indisponível.',
+		server: 'Não foi possível enviar sua mensagem agora. Tente novamente mais tarde.',
+		tooMany: 'Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.',
+		network: 'Não foi possível conectar. Verifique sua internet e tente novamente.',
+		captchaMissing: 'Não foi possível carregar a verificação anti-robô. Recarregue a página e tente novamente.',
+		captchaPending: 'Aguarde a verificação anti-robô terminar e tente novamente.'
+	};
 
-// form submit event
-form.on('submit', function (e) {
-	e.preventDefault(); // prevent default form submit
+	var contactForm = document.getElementById('contact-form');
+	if (contactForm) {
+		setupContactForm(contactForm);
+	}
 
-	if (typeof $('#google-recaptcha-v3').val() != "undefined") {
-		grecaptcha.ready(function () {
-			var site_key = $('#google-recaptcha-v3').attr('src').split("render=")[1];
-			grecaptcha.execute(site_key, {action: 'contact'}).then(function (token) {
-				var gdata = form.serialize() + '&g-recaptcha-response=' + token;
-				$.ajax({
-					url: 'php/mail.php',  // form action url
-					type: 'POST', 		  // form submit method get/post
-					dataType: 'json', 	  // request type html/json/xml
-					data: gdata, 		  // serialize form data
-					beforeSend: function () {
-						submit.attr("disabled", "disabled");
-						var loadingText = '<span role="status" aria-hidden="true" class="spinner-border spinner-border-sm align-self-center me-2"></span>Enviando...'; // change submit button text
-						if (submit.html() !== loadingText) {
-							submit.data('original-text', submit.html());
-							submit.html(loadingText);
-						}
-					},
-					success: function (data) {
-						submit.before(data.Message).fadeIn("slow"); // fade in response data 
-						submit.html(submit.data('original-text'));// reset submit button text
-						submit.removeAttr("disabled", "disabled");
-						if (data.response == 'success') {
-							form.trigger('reset'); // reset form
-						}
-						setTimeout(function () {
-							$('.alert-dismissible').fadeOut('slow', function(){
-								$(this).remove();
-							});
-						}, 3000);
-					},
-					error: function (e) {
-						console.log(e)
-					}
-				});
-			});
-		});
-	} else {
-		$.ajax({
-			url: 'php/mail.php', // form action url
-			type: 'POST', // form submit method get/post
-			dataType: 'json', // request type html/json/xml
-			data: form.serialize(), // serialize form data
-			beforeSend: function () {
-				submit.attr("disabled", "disabled");
-				var loadingText = '<span role="status" aria-hidden="true" class="spinner-border spinner-border-sm align-self-center me-2"></span>Enviando...'; // change submit button text
-				if (submit.html() !== loadingText) {
-					submit.data('original-text', submit.html());
-					submit.html(loadingText);
+	function setupContactForm(form) {
+		var submitBtn = document.getElementById('submit-btn');
+		var statusBox = document.getElementById('contact-status');
+		var captchaBox = document.getElementById('contact-captcha');
+		var fields = {
+			name: form.elements.namedItem('name'),
+			email: form.elements.namedItem('email'),
+			message: form.elements.namedItem('message'),
+			website: form.elements.namedItem('website') // campo armadilha
+		};
+		var fallbackEmail = form.getAttribute('data-fallback-email') || '';
+		var originalLabel = submitBtn.innerHTML;
+		var readyAt = Date.now();
+		var sending = false;
+		var cooldownTimer = null;
+		var widgetId = null;
+		var widgetTheme = null;
+
+		/* Verificação anti-robô (Cloudflare Turnstile) */
+		function currentTheme() {
+			return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+		}
+
+		function renderCaptcha() {
+			if (!window.turnstile || !captchaBox) {
+				return;
+			}
+			if (widgetId !== null) {
+				window.turnstile.remove(widgetId);
+			}
+			widgetTheme = currentTheme();
+			widgetId = window.turnstile.render(captchaBox, {
+				sitekey: captchaBox.getAttribute('data-sitekey'),
+				action: 'contact',
+				theme: widgetTheme,
+				language: 'pt-br',
+				'error-callback': function (code) {
+					console.warn('Turnstile: erro ' + code);
+					return true;
 				}
-			},
-			success: function (data) {
-				submit.before(data.Message).fadeIn("slow"); // fade in response data 
-				submit.html(submit.data('original-text'));// reset submit button text
-				submit.removeAttr("disabled", "disabled");
-				if (data.response == 'success') {
-					form.trigger('reset'); // reset form
-				}
-				setTimeout(function () {
-					$('.alert-dismissible').fadeOut('slow', function(){
-						$(this).remove();
-					});
-				}, 3500);
-				if (typeof $('#recaptcha-v2').val() != "undefined") {
-					grecaptcha.reset(); // reset reCaptcha
-				}
-			},
-			error: function (e) {
-				console.log(e)
+			}) || null;
+		}
+
+		// Chamada pelo script do Turnstile quando ele termina de carregar (onload=onTurnstileLoad)
+		window.onTurnstileLoad = renderCaptcha;
+		if (window.turnstile) {
+			renderCaptcha();
+		}
+
+		// O widget não troca de tema sozinho: é recriado com o tema novo
+		document.addEventListener('themechange', function () {
+			if (widgetId !== null && !sending && currentTheme() !== widgetTheme) {
+				renderCaptcha();
 			}
 		});
+
+		/* Validação (mostra o aviso no próprio campo) */
+		function validateFields() {
+			var limits = CONTACT_LIMITS;
+			var name = fields.name.value.replace(/\s+/g, ' ').trim();
+			var email = fields.email.value.trim();
+			var message = fields.message.value.trim();
+			var links = message.match(CONTACT_LINK_RE) || [];
+
+			var nameError = '';
+			if (name.length < limits.nameMin || name.length > limits.nameMax) {
+				nameError = 'O nome deve ter entre ' + limits.nameMin + ' e ' + limits.nameMax + ' caracteres.';
+			} else if (!CONTACT_NAME_RE.test(name)) {
+				nameError = 'Use apenas letras no nome.';
+			}
+
+			var emailError = '';
+			if (email.length > limits.emailMax || email.split('@')[0].length > 64 || !CONTACT_EMAIL_RE.test(email)) {
+				emailError = 'Informe um e-mail válido, como nome@exemplo.com.';
+			}
+
+			var messageError = '';
+			if (message.length < limits.messageMin) {
+				messageError = 'A mensagem deve ter pelo menos ' + limits.messageMin + ' caracteres.';
+			} else if (message.length > limits.messageMax) {
+				messageError = 'A mensagem deve ter no máximo ' + limits.messageMax + ' caracteres.';
+			} else if (links.length > limits.maxLinks) {
+				messageError = 'A mensagem pode ter no máximo ' + limits.maxLinks + ' links.';
+			}
+
+			fields.name.setCustomValidity(nameError);
+			fields.email.setCustomValidity(emailError);
+			fields.message.setCustomValidity(messageError);
+			return form.reportValidity();
+		}
+
+		// O aviso some assim que a pessoa volta a digitar no campo
+		[fields.name, fields.email, fields.message].forEach(function (field) {
+			field.addEventListener('input', function () {
+				field.setCustomValidity('');
+			});
+		});
+
+		/* Mensagens de retorno (sempre como texto, nunca como HTML) */
+		function showStatus(type, text, withEmail) {
+			var box = document.createElement('div');
+			box.className = 'alert alert-' + type + ' text-center mb-0';
+			box.appendChild(document.createTextNode(text));
+			if (withEmail && fallbackEmail) {
+				var link = document.createElement('a');
+				link.className = 'alert-link';
+				link.href = 'mailto:' + fallbackEmail;
+				link.textContent = fallbackEmail;
+				box.appendChild(document.createTextNode(' Se preferir, me escreva em '));
+				box.appendChild(link);
+				box.appendChild(document.createTextNode('.'));
+			}
+			statusBox.textContent = '';
+			statusBox.appendChild(box);
+		}
+
+		function showError(status, code) {
+			if (status === 429) {
+				showStatus('warning', CONTACT_ERRORS.tooMany);
+			} else if (code === 'validation' || code === 'captcha') {
+				showStatus('danger', CONTACT_ERRORS[code]);
+			} else if (code === 'unavailable') {
+				showStatus('danger', CONTACT_ERRORS.unavailable, true);
+			} else {
+				showStatus('danger', CONTACT_ERRORS.server, true);
+			}
+		}
+
+		/* Bloqueio de reenvio */
+		function setSending(isSending) {
+			sending = isSending;
+			submitBtn.disabled = isSending;
+			submitBtn.innerHTML = isSending
+				? '<span class="spinner-border spinner-border-sm align-self-center me-2" aria-hidden="true"></span>Enviando...'
+				: originalLabel;
+		}
+
+		function startCooldown(ms) {
+			var endsAt = Date.now() + ms;
+			clearInterval(cooldownTimer);
+			submitBtn.disabled = true;
+
+			function tick() {
+				var secondsLeft = Math.ceil((endsAt - Date.now()) / 1000);
+				if (secondsLeft <= 0) {
+					clearInterval(cooldownTimer);
+					cooldownTimer = null;
+					submitBtn.disabled = false;
+					submitBtn.innerHTML = originalLabel;
+					return;
+				}
+				submitBtn.textContent = 'Aguarde ' + secondsLeft + 's';
+			}
+
+			cooldownTimer = setInterval(tick, 1000);
+			tick();
+		}
+
+		function getLastSent() {
+			try {
+				return Number(localStorage.getItem('contactSentAt')) || 0;
+			} catch (e) {
+				return 0;
+			}
+		}
+
+		function saveLastSent() {
+			try {
+				localStorage.setItem('contactSentAt', String(Date.now()));
+			} catch (e) {}
+		}
+
+		// Recarregar a página não libera um novo envio antes do tempo
+		var sinceLastSent = Date.now() - getLastSent();
+		if (sinceLastSent >= 0 && sinceLastSent < CONTACT_COOLDOWN_MS) {
+			startCooldown(CONTACT_COOLDOWN_MS - sinceLastSent);
+		}
+
+		/* Envio */
+		form.addEventListener('submit', function (e) {
+			e.preventDefault();
+			if (sending || cooldownTimer !== null) {
+				return;
+			}
+			statusBox.textContent = '';
+
+			if (!validateFields()) {
+				return;
+			}
+			if (!window.turnstile) {
+				showStatus('danger', CONTACT_ERRORS.captchaMissing, true);
+				return;
+			}
+			var token = widgetId !== null ? window.turnstile.getResponse(widgetId) : '';
+			if (!token) {
+				showStatus('warning', CONTACT_ERRORS.captchaPending);
+				return;
+			}
+
+			var payload = {
+				name: fields.name.value,
+				email: fields.email.value,
+				message: fields.message.value,
+				website: fields.website.value,
+				elapsed: Date.now() - readyAt,
+				token: token
+			};
+
+			setSending(true);
+			var controller = typeof AbortController === 'function' ? new AbortController() : null;
+			var timeout = setTimeout(function () {
+				if (controller) {
+					controller.abort();
+				}
+			}, CONTACT_TIMEOUT_MS);
+
+			fetch(form.getAttribute('action'), {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+				body: JSON.stringify(payload),
+				signal: controller ? controller.signal : undefined
+			})
+				.then(function (response) {
+					return response.json()
+						.catch(function () {
+							return {};
+						})
+						.then(function (data) {
+							return { status: response.status, ok: response.ok && data.ok === true, error: data.error };
+						});
+				})
+				.then(function (result) {
+					if (result.ok) {
+						form.reset();
+						saveLastSent();
+						showStatus('success', 'Mensagem enviada! Obrigado pelo contato, respondo assim que possível.');
+					} else {
+						showError(result.status, result.error);
+					}
+					return result.ok;
+				}, function () {
+					showStatus('danger', CONTACT_ERRORS.network);
+					return false;
+				})
+				.then(function (sent) {
+					clearTimeout(timeout);
+					setSending(false);
+					// O token do Turnstile vale para um envio só
+					if (window.turnstile && widgetId !== null) {
+						window.turnstile.reset(widgetId);
+					}
+					if (sent) {
+						startCooldown(CONTACT_COOLDOWN_MS);
+					}
+				});
+		});
 	}
-});
 
 	const birthday = new Date('09/27/1997');
 	const current_date = Date.now();
@@ -405,6 +606,8 @@ form.on('submit', function (e) {
 		if (themeSwitch) {
 			themeSwitch.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
 		}
+		// Avisa outras partes da página (ex.: a verificação anti-robô do formulário)
+		document.dispatchEvent(new CustomEvent('themechange', { detail: { theme: theme } }));
 	}
 
 	applyTheme(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light');

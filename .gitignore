@@ -1,0 +1,7 @@
+# Arquivos com valores reais das variáveis de ambiente (nunca vão para o Git)
+.env
+.env.*
+!.env.example
+
+# Pasta criada pela CLI da Vercel (vercel link / vercel env pull)
+.vercel

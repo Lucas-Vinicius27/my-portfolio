@@ -104,7 +104,7 @@
                         </li>
                         <li class="social-icons-linkedin">
                             <a data-bs-toggle="tooltip" title="LinkedIn" data-bs-placement="top"
-                                href="https://www.linkedin.com/in/lucas-vinicius-f-dos-santos-247863186"
+                                href="https://www.linkedin.com/in/lucas-vinicius-f-santos"
                                 target="_blank">
                                 <i class="fab fa-linkedin-in"></i>
                             </a>
@@ -214,7 +214,7 @@
                                         <span class="fw-600 me-2">Local:</span> São Paulo - SP, Brasil
                                     </li>
                                 </ul>
-                                <a href="pdf/Currículo.pdf" class="btn btn-primary rounded-pill" download="cv_lucas_santos">Download CV</a>
+                                <a href="pdf/Curriculo_Lucas_Santos_PT.pdf" class="btn btn-primary rounded-pill" download="cv_lucas_santos">Download CV</a>
                             </div>
                         </div>
                     </div>
@@ -412,7 +412,7 @@
                         </div>
                     </div>
                     <div class="text-center mt-5">
-                        <a href="pdf/Currículo.pdf" class="btn btn-outline-secondary rounded-pill shadow-none" download="cv_lucas_santos">
+                        <a href="pdf/Curriculo_Lucas_Santos_PT.pdf" class="btn btn-outline-secondary rounded-pill shadow-none" download="cv_lucas_santos">
                             Download CV <span class="ms-1"><i class="fas fa-download"></i></span>
                         </a>
                     </div>
@@ -659,7 +659,7 @@
                                 </li>
                                 <li class="social-icons-linkedin">
                                     <a data-bs-toggle="tooltip" title="LinkedIn"
-                                        href="https://www.linkedin.com/in/lucas-vinicius-f-dos-santos-247863186"
+                                        href="https://www.linkedin.com/in/lucas-vinicius-f-santos"
                                         target="_blank">
                                         <i class="fab fa-linkedin-in"></i>
                                     </a>
@@ -674,22 +674,36 @@
                         </div>
                         <div class="col-md-8 col-xl-9 order-0 order-md-1">
                             <h2 class="mb-3 text-5 text-uppercase text-center text-md-start">Envie uma mensagem</h2>
-                            <form id="contact-form" action="" method="post">
+                            <!-- Enviado para a função da Vercel em api/contact.js -->
+                            <form id="contact-form" action="/api/contact" method="post"
+                                data-fallback-email="lucas_vfsantos@hotmail.com">
                                 <div class="row g-4">
                                     <div class="col-xl-6">
-                                        <input name="name" type="text" class="form-control" required placeholder="Nome" aria-label="Nome">
+                                        <input name="name" type="text" class="form-control" required minlength="2" maxlength="100"
+                                            autocomplete="name" placeholder="Nome" aria-label="Nome">
                                     </div>
                                     <div class="col-xl-6">
-                                        <input name="email" type="email" class="form-control" required placeholder="E-mail" aria-label="E-mail">
+                                        <input name="email" type="email" class="form-control" required maxlength="254"
+                                            autocomplete="email" placeholder="E-mail" aria-label="E-mail">
                                     </div>
                                     <div class="col-12">
-                                        <textarea name="form-message" class="form-control" rows="5" required
+                                        <textarea name="message" class="form-control" rows="5" required minlength="10" maxlength="3000"
                                             placeholder="Conte-me mais sobre o que você precisa..." aria-label="Mensagem"></textarea>
                                     </div>
                                 </div>
+                                <!-- Campo armadilha: fica escondido e só robôs preenchem -->
+                                <div class="contact-hp" aria-hidden="true">
+                                    <label for="contact-website">Deixe este campo em branco</label>
+                                    <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
+                                </div>
+                                <!-- Verificação anti-robô (Cloudflare Turnstile).
+                                     Troque a chave de teste em data-sitekey (1x00000000000000000000AA) pela site key do seu widget. -->
+                                <div id="contact-captcha" class="contact-captcha d-flex justify-content-center mt-4"
+                                    data-sitekey="1x00000000000000000000AA"></div>
                                 <p class="text-center mt-4 mb-0">
                                     <button id="submit-btn" class="btn btn-primary rounded-pill d-inline-flex" type="submit">Enviar Mensagem</button>
                                 </p>
+                                <div id="contact-status" class="contact-status mt-4" aria-live="polite"></div>
                             </form>
                         </div>
                     </div>
@@ -753,14 +767,24 @@
                         à sua mensagem.
                     </p>
                     <ol class="lh-lg">
-                        <li>São coletados somente os dados que você informa no formulário de contato (nome, e-mail e mensagem).</li>
-                        <li>Seus dados não são vendidos, alugados ou compartilhados com terceiros.</li>
                         <li>
-                            O formulário é protegido pelo Google reCAPTCHA, sujeito à
-                            <a href="https://policies.google.com/privacy" target="_blank">Política de Privacidade</a> e aos
-                            <a href="https://policies.google.com/terms" target="_blank">Termos de Serviço</a> do Google.
+                            São coletados os dados que você informa no formulário de contato (nome, e-mail e mensagem)
+                            e, para evitar spam e abusos, o endereço IP, a localização aproximada e o navegador usados no envio.
                         </li>
-                        <li>A sua preferência de tema (claro ou escuro) fica salva apenas no seu navegador.</li>
+                        <li>
+                            Seus dados não são vendidos, alugados ou compartilhados com terceiros. A mensagem é entregue
+                            por e-mail através do <a href="https://resend.com/legal/privacy-policy" target="_blank">Resend</a>.
+                        </li>
+                        <li>
+                            O formulário é protegido pelo Cloudflare Turnstile, sujeito à
+                            <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Política de Privacidade</a> e ao
+                            <a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank">Aditivo de Privacidade do Turnstile</a>
+                            da Cloudflare.
+                        </li>
+                        <li>
+                            A sua preferência de tema (claro ou escuro) e o horário do seu último envio pelo formulário
+                            (usado para evitar envios repetidos) ficam salvos apenas no seu navegador.
+                        </li>
                         <li>Você pode pedir a exclusão dos seus dados a qualquer momento pelo e-mail lucas_vfsantos@hotmail.com.</li>
                     </ol>
                 </div>
@@ -814,8 +838,8 @@
     <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
     <!-- Custom Script -->
     <script src="./js/main.js"></script>
-    <script id="google-recaptcha-v3"
-        src="https://www.google.com/recaptcha/api.js?render=6LcmyrcZAAAAAIHP9WnJyuxn9vBiiro6WRpITEsQ"></script>
+    <!-- Cloudflare Turnstile (verificação anti-robô do formulário de contato) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onTurnstileLoad" defer></script>
 </body>
 
 </html>
