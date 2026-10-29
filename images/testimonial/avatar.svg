@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+    <!-- Avatar provisório: substitua pela foto da pessoa (60x60) -->
+    <rect width="60" height="60" fill="#ced4da"/>
+    <circle cx="30" cy="23" r="11" fill="#f8f9fa"/>
+    <path d="M9 60c1-12 10-19 21-19s20 7 21 19z" fill="#f8f9fa"/>
+</svg>

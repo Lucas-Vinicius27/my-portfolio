@@ -1,24 +1,915 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Portfólio</title>
+    <meta name="description" content="Portfólio de Lucas Santos, Engenheiro de Software Backend e Full Stack em São Paulo."
+        data-i18n-attr="content:meta.description">
+    <meta name="author" content="Lucas Santos">
+    <title data-i18n="meta.title">Lucas Santos | Engenheiro de Software</title>
+    <!-- Aplica o tema (claro/escuro) e o idioma (português/inglês) antes da página ser desenhada -->
+    <script>
+        (function () {
+            var root = document.documentElement;
+            var theme = null;
+            var lang = null;
+            try {
+                theme = localStorage.getItem('theme');
+                lang = localStorage.getItem('lang');
+            } catch (e) {}
+            if (theme !== 'light' && theme !== 'dark') {
+                theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            root.setAttribute('data-theme', theme);
+
+            // Idioma: ?lang= no endereço > escolha salva > idioma do navegador (pt abre em português, qualquer outro em inglês)
+            try {
+                var param = new URLSearchParams(window.location.search).get('lang');
+                if (param === 'pt' || param === 'en') {
+                    lang = param;
+                }
+            } catch (e) {}
+            if (lang !== 'pt' && lang !== 'en') {
+                var browserLang = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+                lang = /^pt\b/i.test(browserLang) ? 'pt' : 'en';
+            }
+            root.setAttribute('data-lang', lang);
+            root.setAttribute('lang', lang === 'en' ? 'en' : 'pt-br');
+        })();
+    </script>
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;400;500;600&display=swap" rel="stylesheet">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css" />
+    <!-- Font Awesome Icon -->
+    <link rel="stylesheet" type="text/css" href="vendor/font-awesome/css/all.min.css" />
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" type="text/css" href="vendor/owl.carousel/assets/owl.carousel.min.css" />
+    <!-- Magnific Popup -->
+    <link rel="stylesheet" type="text/css" href="vendor/magnific-popup/magnific-popup.min.css" />
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <main>
-        <h1>Portfólio em Construção</h1>
-        <img src="images/gear.svg" alt="Engrenagem">
-        <p>
-            Logo logo o site estará finalizado!<br/>
-            Muito Obrigado pela visita!
-        </p>
-    </main>
+
+<body class="side-header" data-bs-spy="scroll" data-bs-target="#header-nav" data-bs-offset="1">
+    <!-- Inicio Preloader -->
+    <div class="preloader">
+        <div class="lds-ellipsis">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <!-- Fim Preloader -->
+    <!-- Inicio Main -->
+    <div id="main-wrapper">
+        <!-- Inicio Header -->
+        <header id="header" class="sticky-top">
+            <!-- Inicio Navbar -->
+            <nav class="primary-menu navbar navbar-expand-lg bg-dark navbar-text-light border-bottom-0">
+                <div class="container-fluid position-relative h-100 flex-lg-column ps-3 px-lg-3 pt-lg-3 pb-lg-2">
+                    <!-- Inicio Logo -->
+                    <a href="index.html" class="mb-lg-auto mt-lg-4">
+                        <span class="bg-dark-2 rounded-pill p-2 mb-lg-1 d-none d-lg-inline-block">
+                            <img src="images/profile.jpg" title="Eu sou o Lucas" alt="Foto do Lucas" data-i18n-attr="title:header.photoTitle, alt:header.photoAlt"
+                                class="img-fluid rounded-pill d-block">
+                        </span>
+                        <h1 class="text-5 text-white text-center mb-0 d-lg-block">Lucas Santos</h1>
+                    </a>
+                    <!-- Fim Logo -->
+                    <div id="header-nav" class="collapse navbar-collapse w-100 my-lg-auto">
+                        <ul class="navbar-nav text-lg-center my-lg-auto py-lg-3">
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll active" href="#home" data-i18n="nav.home">Introdução</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#about" data-i18n="nav.about">Sobre Eu</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#services" data-i18n="nav.services">O que eu faço</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#resume" data-i18n="nav.resume">Qualificações</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#projects" data-i18n="nav.projects">Projetos</a>
+                            </li>
+                            <!-- Oculto junto com a seção de depoimentos
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#testimonial" data-i18n="nav.testimonial">Depoimentos</a>
+                            </li>
+                            -->
+                            <li class="nav-item">
+                                <a class="nav-link smooth-scroll" href="#contact" data-i18n="nav.contact">Contato</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <ul class="social-icons social-icons-muted social-icons-sm mt-lg-auto ms-auto ms-lg-0 d-none d-sm-flex">
+                        <li class="social-icons-facebook">
+                            <a data-bs-toggle="tooltip" title="Facebook"
+                                href="https://web.facebook.com/lucas.vinicius.79219754" target="_blank">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                        </li>
+                        <li class="social-icons-instagram">
+                            <a data-bs-toggle="tooltip" title="Instagram"
+                                href="https://www.instagram.com/luvinisantos/" target="_blank">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                        </li>
+                        <li class="social-icons-linkedin">
+                            <a data-bs-toggle="tooltip" title="LinkedIn" data-bs-placement="top"
+                                href="https://www.linkedin.com/in/lucas-vinicius-f-santos"
+                                target="_blank">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </li>
+                        <li class="social-icons-github">
+                            <a data-bs-toggle="tooltip" title="GitHub" data-bs-placement="top"
+                                href="https://github.com/Lucas-Vinicius27" target="_blank">
+                                <i class="fab fa-github"></i>
+                            </a>
+                        </li>
+                    </ul>
+                    <!-- Inicio Botões de Tema e Idioma -->
+                    <div class="header-switches d-flex align-items-center justify-content-center ms-auto ms-sm-3 ms-lg-0 mt-lg-3">
+                        <button id="theme-switch" class="theme-switch" type="button" role="switch"
+                            aria-checked="false" aria-label="Tema escuro" data-bs-toggle="tooltip" title="Tema claro / escuro"
+                            data-i18n-attr="aria-label:header.themeLabel, title:header.themeTooltip">
+                            <span class="theme-switch-track" aria-hidden="true">
+                                <i class="fas fa-sun theme-switch-icon theme-switch-icon-sun"></i>
+                                <i class="fas fa-moon theme-switch-icon theme-switch-icon-moon"></i>
+                                <span class="theme-switch-thumb"></span>
+                            </span>
+                        </button>
+                        <button id="lang-switch" class="lang-switch ms-2" type="button" data-bs-toggle="tooltip"
+                            title="Português / English" aria-label="Mudar o idioma para inglês"
+                            data-i18n-attr="aria-label:header.langLabel">
+                            <span class="lang-switch-track" aria-hidden="true">
+                                <span class="lang-switch-label lang-switch-label-pt">PT</span>
+                                <span class="lang-switch-label lang-switch-label-en">EN</span>
+                                <span class="lang-switch-thumb"></span>
+                            </span>
+                        </button>
+                    </div>
+                    <!-- Fim Botões de Tema e Idioma -->
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#header-nav">
+                        <span></span><span></span><span></span>
+                    </button>
+                </div>
+            </nav>
+            <!-- Fim Navbar -->
+        </header>
+        <!-- Fim Header -->
+        <!-- Inicio Content -->
+        <div id="content" role="main">
+            <!-- Inicio Introdução -->
+            <section id="home">
+                <div class="hero-wrap">
+                    <div class="hero-mask opacity-8 bg-dark"></div>
+                    <div class="hero-bg parallax" style="background-image: url('images/intro-bg.jpg');"></div>
+                    <div class="hero-content section d-flex fullscreen">
+                        <div class="container my-auto">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <div class="typed-strings">
+                                        <p data-i18n="home.typed1">Eu sou Lucas Santos</p>
+                                        <p data-i18n="home.typed2">Eu sou Engenheiro de Software.</p>
+                                        <p data-i18n="home.typed3">Eu sou Dev Backend.</p>
+                                        <p data-i18n="home.typed4">Eu sou Dev Full Stack.</p>
+                                    </div>
+                                    <p class="text-7 fw-500 text-white mb-2 mb-md-3" data-i18n="home.welcome">Bem-Vindo(a)</p>
+                                    <h2 class="text-16 fw-600 text-white mb-2 mb-md-3"><span class="typed"></span></h2>
+                                    <p class="text-5 text-light mb-4" data-i18n="home.location">Moro em São Paulo, Brasil.</p>
+                                    <a href="#contact"
+                                        class="btn btn-outline-primary rounded-pill shadow-none smooth-scroll mt-2" data-i18n="home.hire">Contrate-me</a>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#about" class="scroll-down-arrow text-white smooth-scroll">
+                            <span class="animated">
+                                <i class="fa fa-chevron-down"></i>
+                            </span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Introdução -->
+            <!-- Inicio Sobre eu -->
+            <section id="about" class="section">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0" data-i18n="about.watermark">
+                            Sobre eu
+                        </h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            <span data-i18n="about.subtitle">Conheça-me mais</span>
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="row gy-5">
+                        <div class="col-lg-7 col-xl-8 text-center text-lg-start">
+                            <h2 class="text-7 fw-600 mb-3" data-i18n-html="about.heading">
+                                Eu sou <span class="text-primary">Lucas Santos</span>, Engenheiro de Software.
+                            </h2>
+                            <p data-i18n-html="about.text1">
+                                Tenho mais de <span class="years-experience">6</span> anos de experiência em desenvolvimento backend e full stack,
+                                com forte atuação em saúde digital e plataformas de pagamentos. Trabalho
+                                principalmente com Node.js, TypeScript e NestJS na construção de APIs escaláveis,
+                                com PostgreSQL, MySQL, SQL Server e MongoDB, além de Angular e React no frontend.
+                            </p>
+                            <p data-i18n="about.text2">
+                                Atuo no desenho de soluções backend com foco em escalabilidade, performance e
+                                manutenibilidade, aplicando Clean Code, DDD e ferramentas de IA para acelerar
+                                o desenvolvimento, a revisão de código e os testes.
+                            </p>
+                        </div>
+                        <div class="col-lg-5 col-xl-4">
+                            <div class="ps-lg-4">
+                                <ul class="list-style-2">
+                                    <li>
+                                        <span class="fw-600 me-2" data-i18n="about.name">Nome:</span> Lucas Santos
+                                    </li>
+                                    <li>
+                                        <span class="fw-600 me-2">Email:</span>
+                                        <a href="mailto:lucas_vfsantos@hotmail.com">lucas_vfsantos@hotmail.com</a>
+                                    </li>
+                                    <li>
+                                        <span class="fw-600 me-2" data-i18n="about.age">Idade:</span> <span id="years_old"></span>
+                                    </li>
+                                    <li class="border-0">
+                                        <span class="fw-600 me-2" data-i18n="about.location">Local:</span> <span data-i18n="about.locationValue">São Paulo - SP, Brasil</span>
+                                    </li>
+                                </ul>
+                                <a href="pdf/Curriculo_Lucas_Santos_PT.pdf" class="btn btn-primary rounded-pill" download="cv_lucas_santos" data-i18n-attr="href:cv.file, download:cv.downloadName">Download CV</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="brands-grid separator-border mt-5">
+                        <div class="row">
+                            <div class="col-6 col-md-3">
+                                <div class="featured-box text-center">
+                                    <h4 class="text-12 text-muted mb-0">
+                                        <span class="counter years-experience" data-from="0" data-to="6">6</span>
+                                    </h4>
+                                    <p class="mb-0" data-i18n="about.counterYears">Anos de Experiência</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="featured-box text-center">
+                                    <h4 class="text-12 text-muted mb-0">
+                                        <span class="counter" data-from="0" data-to="3">3</span>
+                                    </h4>
+                                    <p class="mb-0" data-i18n="about.counterCompanies">Empresas em que trabalhei</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="featured-box text-center">
+                                    <h4 class="text-12 text-muted mb-0">
+                                        <span class="counter" data-from="0" data-to="1">1</span>
+                                    </h4>
+                                    <p class="mb-0" data-i18n="about.counterDone">Projetos prontos</p>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="featured-box text-center">
+                                    <h4 class="text-12 text-muted mb-0">
+                                        <span class="counter" data-from="0" data-to="1">1</span>
+                                    </h4>
+                                    <p class="mb-0" data-i18n="about.counterOngoing">Projetos em Construção</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Sobre eu -->
+            <!-- Inicio Services -->
+            <section id="services" class="section bg-light">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0" data-i18n="services.watermark">
+                            Serviços
+                        </h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            <span data-i18n="services.subtitle">O que eu faço?</span>
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-11 mx-auto">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="featured-box style-3 mb-5 mb-md-0">
+                                        <div class="featured-box-icon text-primary bg-white shadow-sm rounded">
+                                            <i class="fas fa-desktop"></i>
+                                        </div>
+                                        <h3>Front End</h3>
+                                        <p class="mb-0" data-i18n="services.frontText">
+                                            Desenvolvo interfaces web com Angular, React e Next.js, usando TypeScript
+                                            e JavaScript, integradas a APIs REST e a serviços como Firebase e Stripe.
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="featured-box style-3 mb-0">
+                                        <div class="featured-box-icon text-primary bg-white shadow-sm rounded">
+                                            <i class="fas fa-server"></i>
+                                        </div>
+                                        <h3>Back End</h3>
+                                        <p class="mb-0" data-i18n="services.backText">
+                                            Construo APIs REST escaláveis com Node.js, NestJS, Express e PHP (Laravel),
+                                            usando PostgreSQL, MySQL, SQL Server, MongoDB e Redis, filas com BullMQ e
+                                            Pub/Sub, e deploy com Docker na AWS e no Google Cloud.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Services -->
+            <!-- Inicio Resume -->
+            <section id="resume" class="section">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0" data-i18n="resume.watermark">
+                            Resumo
+                        </h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            <span data-i18n="resume.subtitle">Qualificações</span>
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="row gx-5">
+                        <div class="col-md-6">
+                            <h2 class="text-6 fw-600 mb-4" data-i18n="resume.education">Educação</h2>
+                            <div class="bg-white border rounded p-4 mb-4">
+                                <p class="badge bg-primary text-2 fw-400">2018 - 2023</p>
+                                <h3 class="text-5" data-i18n="resume.edu1.title">Ciência da Computação</h3>
+                                <p class="text-danger">Universidade Paulista UNIP</p>
+                                <p class="mb-0" data-i18n="resume.edu1.text">
+                                    Bacharelado em Ciência da Computação, com base em programação, banco de dados,
+                                    redes e inteligência artificial. No TCC, desenvolvi o Student Workspace, uma
+                                    aplicação web de produtividade baseada na técnica Pomodoro.
+                                </p>
+                            </div>
+                            <div class="bg-white border rounded p-4 mb-4">
+                                <p class="badge bg-primary text-2 fw-400">2025</p>
+                                <h3 class="text-5" data-i18n="resume.edu2.title">Língua Inglesa</h3>
+                                <p class="text-danger">Cultura Inglesa</p>
+                                <p class="mb-0" data-i18n="resume.edu2.text">
+                                    Curso livre de inglês para aprimorar a comunicação no idioma.
+                                    Nível atual: intermediário.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h2 class="text-6 fw-600 mb-4" data-i18n="resume.experience">Experiência</h2>
+                            <div class="bg-white border rounded p-4 mb-4">
+                                <p class="badge bg-primary text-2 fw-400" data-i18n="resume.exp1.period">2024 - Atual</p>
+                                <h3 class="text-5" data-i18n="resume.exp1.title">Engenheiro de Software Pleno</h3>
+                                <p class="text-danger" data-i18n="resume.exp1.company">GetConnect | Gestão em Saúde Digital</p>
+                                <p class="mb-0" data-i18n="resume.exp1.text">
+                                    Desenvolvimento full stack de uma plataforma de telemedicina para consultas online
+                                    e gestão de UBSs, com Node.js, NestJS, TypeScript, PostgreSQL e Angular na GCP.
+                                    Atuo na migração de microsserviços legados em LoopBack para NestJS e desenvolvi
+                                    uma funcionalidade que reduziu em 50% a demanda de suporte ao time.
+                                </p>
+                            </div>
+                            <div class="bg-white border rounded p-4 mb-4">
+                                <p class="badge bg-primary text-2 fw-400">2023 - 2024</p>
+                                <h3 class="text-5" data-i18n="resume.exp2.title">Desenvolvedor Backend</h3>
+                                <p class="text-danger">Kirvano</p>
+                                <p class="mb-0" data-i18n="resume.exp2.text">
+                                    Backend da área de membros e do backoffice de uma plataforma de pagamentos e
+                                    vendas de produtos digitais. Desenvolvi APIs REST com Node.js, TypeScript,
+                                    Express e NestJS, filas com BullMQ, cache com Redis e rotinas agendadas,
+                                    com Docker e serverless na AWS.
+                                </p>
+                            </div>
+                            <div class="bg-white border rounded p-4 mb-4">
+                                <p class="badge bg-primary text-2 fw-400">2019 - 2023</p>
+                                <h3 class="text-5" data-i18n="resume.exp3.title">Analista de Desenvolvimento</h3>
+                                <p class="text-danger">DuoSystem Tecnologia &amp; Informática</p>
+                                <p class="mb-0" data-i18n="resume.exp3.text">
+                                    Comecei como estagiário e fui promovido a analista júnior e depois a pleno, em um
+                                    sistema de regulação em saúde pública usado por hospitais, AMAs, UBSs e farmácias.
+                                    Desenvolvi em PHP (Laravel e CodeIgniter), JavaScript e SQL Server, reduzi a
+                                    geração de relatórios de 2 minutos para 40 segundos e fiz code reviews.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <h2 class="text-6 fw-600 mt-4 mb-4" data-i18n="resume.skills">Minhas Habilidades</h2>
+                    <div class="row gx-5">
+                        <div class="col-md-6">
+                            <p class="text-dark fw-500 text-start mb-2">
+                                Node.js <span class="float-end">90%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-dark fw-500 text-start mb-2">
+                                TypeScript <span class="float-end">90%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 90%" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-dark fw-500 text-start mb-2">
+                                NestJS <span class="float-end">85%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-dark fw-500 text-start mb-2">
+                                PostgreSQL <span class="float-end">80%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="text-dark fw-500 text-start mb-2">
+                                Angular <span class="float-end">75%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 75%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-dark fw-500 text-start mb-2">
+                                React / Next.js <span class="float-end">65%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-dark fw-500 text-start mb-2">
+                                SQL Server <span class="float-end">85%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 85%" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-dark fw-500 text-start mb-2">
+                                PHP / Laravel <span class="float-end">80%</span>
+                            </p>
+                            <div class="progress progress-sm mb-4">
+                                <div class="progress-bar" role="progressbar" style="width: 80%" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-5">
+                        <a href="pdf/Curriculo_Lucas_Santos_PT.pdf" class="btn btn-outline-secondary rounded-pill shadow-none" download="cv_lucas_santos" data-i18n-attr="href:cv.file, download:cv.downloadName">
+                            Download CV <span class="ms-1"><i class="fas fa-download"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Resume -->
+            <!-- Inicio Projetos -->
+            <section id="projects" class="section bg-light">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0" data-i18n="projects.watermark">Projetos</h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            <span data-i18n="projects.subtitle">Meu Trabalho</span>
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <ul class="portfolio-menu nav nav-tabs justify-content-center border-bottom-0 mb-5">
+                        <li class="nav-item">
+                            <a href="" data-filter="*" class="nav-link active" data-i18n="projects.filterAll">Todos</a>
+                        </li>
+                        <!-- Sem projetos Back End por enquanto
+                        <li class="nav-item">
+                            <a href="" data-filter=".back" class="nav-link">Back End</a>
+                        </li>
+                        -->
+                        <li class="nav-item">
+                            <a href="" data-filter=".front" class="nav-link">Front End</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="" data-filter=".mixed" class="nav-link" data-i18n="projects.categoryMixed">Misto</a>
+                        </li>
+                    </ul>
+                    <div class="portfolio popup-ajax-gallery">
+                        <div class="row portfolio-filter g-4">
+                            <div class="col-sm-6 col-lg-4 mixed">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/tm-pt-escuro.png" alt="Imagem do Time Entertainment"
+                                            data-i18n-attr="src:projects.tm.image, alt:projects.tm.alt">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-1.html" aria-label="Ver detalhes do Time Entertainment"
+                                                data-i18n-attr="aria-label:projects.tm.details"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Time Entertainment</h5>
+                                                <span class="text-light" data-i18n="projects.categoryMixed">Misto</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 front">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/student-workspace-capa.png" alt="Imagem do Student Workspace"
+                                            data-i18n-attr="src:projects.sw.image, alt:projects.sw.alt">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-2.html" aria-label="Ver detalhes do Student Workspace"
+                                                data-i18n-attr="aria-label:projects.sw.details"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Student Workspace</h5>
+                                                <span class="text-light">Front End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Projetos de exemplo, ocultos até serem preenchidos (ajax/projeto-3.html a projeto-6.html)
+                            <div class="col-sm-6 col-lg-4 mixed">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 3">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-3.html" aria-label="Ver detalhes do Projeto 3"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 3</h5>
+                                                <span class="text-light">Misto</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 back">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 4">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-4.html" aria-label="Ver detalhes do Projeto 4"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 4</h5>
+                                                <span class="text-light">Back End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 front">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 5">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-5.html" aria-label="Ver detalhes do Projeto 5"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 5</h5>
+                                                <span class="text-light">Front End</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-4 mixed">
+                                <div class="portfolio-box rounded">
+                                    <div class="portfolio-img rounded">
+                                        <img class="img-fluid d-block" src="images/projects/placeholder.svg" alt="Imagem do Projeto 6">
+                                        <div class="portfolio-overlay">
+                                            <a class="popup-ajax stretched-link" href="ajax/projeto-6.html" aria-label="Ver detalhes do Projeto 6"></a>
+                                            <div class="portfolio-overlay-details">
+                                                <h5 class="text-white fw-400">Nome do Projeto 6</h5>
+                                                <span class="text-light">Misto</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Projetos -->
+            <!-- Inicio Depoimentos -->
+            <!-- Seção oculta até ter depoimentos reais. Para exibir, tire do comentário
+                 a seção e o link "Depoimentos" no menu, e mantenha os fundos alternados:
+                 devolva o bg-light ao #contact e tire o bg-light do #footer.
+            <section id="testimonial" class="section">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0">Depoimentos</h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            O que dizem
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="owl-carousel owl-theme" data-loop="true" data-nav="false" data-autoplay="false"
+                        data-margin="25" data-stagepadding="0" data-slideby="1" data-items-xs="1" data-items-sm="1"
+                        data-items-md="1" data-items-lg="2">
+                        <div class="item">
+                            <div class="bg-light rounded p-5">
+                                <div class="d-flex align-items-center mt-auto mb-4">
+                                    <img class="img-fluid rounded-circle border d-inline-block w-auto" src="images/testimonial/avatar.svg" alt="">
+                                    <p class="ms-3 mb-0">
+                                        <strong class="d-block text-dark fw-600">Nome da Pessoa</strong>
+                                        <span class="text-muted fw-500">Gestor(a) na Empresa</span>
+                                    </p>
+                                </div>
+                                <p class="text-dark fw-500 mb-4">
+                                    “Escreva aqui o depoimento de um gestor sobre o seu trabalho, destacando
+                                    as suas qualidades técnicas e profissionais.”
+                                </p>
+                                <span class="text-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="bg-light rounded p-5">
+                                <div class="d-flex align-items-center mt-auto mb-4">
+                                    <img class="img-fluid rounded-circle border d-inline-block w-auto" src="images/testimonial/avatar.svg" alt="">
+                                    <p class="ms-3 mb-0">
+                                        <strong class="d-block text-dark fw-600">Nome da Pessoa</strong>
+                                        <span class="text-muted fw-500">Colega de equipe</span>
+                                    </p>
+                                </div>
+                                <p class="text-dark fw-500 mb-4">
+                                    “Escreva aqui o depoimento de um colega de trabalho sobre como é
+                                    trabalhar com você no dia a dia.”
+                                </p>
+                                <span class="text-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <div class="bg-light rounded p-5">
+                                <div class="d-flex align-items-center mt-auto mb-4">
+                                    <img class="img-fluid rounded-circle border d-inline-block w-auto" src="images/testimonial/avatar.svg" alt="">
+                                    <p class="ms-3 mb-0">
+                                        <strong class="d-block text-dark fw-600">Nome da Pessoa</strong>
+                                        <span class="text-muted fw-500">Cliente</span>
+                                    </p>
+                                </div>
+                                <p class="text-dark fw-500 mb-4">
+                                    “Escreva aqui o depoimento de um cliente sobre um projeto que você
+                                    entregou para ele.”
+                                </p>
+                                <span class="text-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            -->
+            <!-- Fim Depoimentos -->
+            <!-- Inicio Contato -->
+            <section id="contact" class="section">
+                <div class="container px-lg-5">
+                    <div class="position-relative d-flex text-center mb-5">
+                        <h2 class="text-24 text-light opacity-4 text-uppercase fw-600 w-100 mb-0" data-i18n="contact.watermark">Contato</h2>
+                        <p class="text-9 text-dark fw-600 position-absolute w-100 align-self-center lh-base mb-0">
+                            <span data-i18n="contact.subtitle">Entre em contato</span>
+                            <span class="heading-separator-line border-bottom border-3 border-primary d-block mx-auto"></span>
+                        </p>
+                    </div>
+                    <div class="row gy-5">
+                        <div class="col-md-4 col-xl-3 order-1 order-md-0 text-center text-md-start">
+                            <h2 class="mb-3 text-5 text-uppercase" data-i18n="contact.address">Endereço</h2>
+                            <p class="text-3 mb-4" data-i18n-html="contact.addressValue">
+                                São Paulo - SP,<br>
+                                Brasil
+                            </p>
+                            <!-- Descomente e preencha para exibir seu telefone/WhatsApp -->
+                            <!--
+                            <p class="text-3 mb-1">
+                                <span class="text-primary text-4 me-2"><i class="fas fa-phone"></i></span>(11) 00000-0000
+                            </p>
+                            -->
+                            <p class="text-3 text-break mb-4">
+                                <span class="text-primary text-4 me-2"><i class="fas fa-envelope"></i></span>lucas_vfsantos@hotmail.com
+                            </p>
+                            <h2 class="mb-3 text-5 text-uppercase" data-i18n="contact.follow">Me siga</h2>
+                            <ul class="social-icons justify-content-center justify-content-md-start">
+                                <li class="social-icons-facebook">
+                                    <a data-bs-toggle="tooltip" title="Facebook"
+                                        href="https://web.facebook.com/lucas.vinicius.79219754" target="_blank">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                </li>
+                                <li class="social-icons-instagram">
+                                    <a data-bs-toggle="tooltip" title="Instagram"
+                                        href="https://www.instagram.com/luvinisantos/" target="_blank">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                </li>
+                                <li class="social-icons-linkedin">
+                                    <a data-bs-toggle="tooltip" title="LinkedIn"
+                                        href="https://www.linkedin.com/in/lucas-vinicius-f-santos"
+                                        target="_blank">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </li>
+                                <li class="social-icons-github">
+                                    <a data-bs-toggle="tooltip" title="GitHub"
+                                        href="https://github.com/Lucas-Vinicius27" target="_blank">
+                                        <i class="fab fa-github"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-8 col-xl-9 order-0 order-md-1">
+                            <h2 class="mb-3 text-5 text-uppercase text-center text-md-start" data-i18n="contact.formTitle">Envie uma mensagem</h2>
+                            <!-- Enviado para a função da Vercel em api/contact.js -->
+                            <form id="contact-form" action="/api/contact" method="post"
+                                data-fallback-email="lucas_vfsantos@hotmail.com">
+                                <div class="row g-4">
+                                    <div class="col-xl-6">
+                                        <input name="name" type="text" class="form-control" required minlength="2" maxlength="100"
+                                            autocomplete="name" placeholder="Nome" aria-label="Nome"
+                                            data-i18n-attr="placeholder:contact.name, aria-label:contact.name">
+                                    </div>
+                                    <div class="col-xl-6">
+                                        <input name="email" type="email" class="form-control" required maxlength="254"
+                                            autocomplete="email" placeholder="E-mail" aria-label="E-mail"
+                                            data-i18n-attr="placeholder:contact.email, aria-label:contact.email">
+                                    </div>
+                                    <div class="col-12">
+                                        <textarea name="message" class="form-control" rows="5" required minlength="10" maxlength="3000"
+                                            placeholder="Conte-me mais sobre o que você precisa..." aria-label="Mensagem"
+                                            data-i18n-attr="placeholder:contact.messagePlaceholder, aria-label:contact.message"></textarea>
+                                    </div>
+                                </div>
+                                <!-- Campo armadilha: fica escondido e só robôs preenchem -->
+                                <div class="contact-hp" aria-hidden="true">
+                                    <label for="contact-website" data-i18n="contact.honeypot">Deixe este campo em branco</label>
+                                    <input id="contact-website" name="website" type="text" tabindex="-1" autocomplete="off">
+                                </div>
+                                <!-- Verificação anti-robô (Cloudflare Turnstile).
+                                     Troque a chave de teste em data-sitekey (1x00000000000000000000AA) pela site key do seu widget. -->
+                                <div id="contact-captcha" class="contact-captcha d-flex justify-content-center mt-4"
+                                    data-sitekey="0x4AAAAAAFqThDwJ0QKRjj55"></div>
+                                <!-- O texto do botão é trocado pelo main.js (idioma, "Enviando..." e "Aguarde") -->
+                                <p class="text-center mt-4 mb-0">
+                                    <button id="submit-btn" class="btn btn-primary rounded-pill d-inline-flex" type="submit">Enviar Mensagem</button>
+                                </p>
+                                <div id="contact-status" class="contact-status mt-4" aria-live="polite"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <!-- Fim Contato -->
+        </div>
+        <!-- Fim Content -->
+        <!-- Inicio Footer -->
+        <footer id="footer" class="section bg-light">
+            <div class="container px-lg-5">
+                <div class="row">
+                    <div class="col-lg-6 text-center text-lg-start">
+                        <p class="mb-3 mb-lg-0">
+                            Copyright &copy; <span id="current-year">2026</span>
+                            <a href="#home" class="fw-500 smooth-scroll">Lucas Santos</a>. <span data-i18n="footer.rights">Todos os direitos reservados.</span>
+                        </p>
+                    </div>
+                    <div class="col-lg-6">
+                        <ul class="nav nav-separator justify-content-center justify-content-lg-end">
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#terms-policy" href="#" data-i18n="terms.title">Termos e Política</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#disclaimer" href="#" data-i18n="footer.disclaimer">Aviso Legal</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- Fim Footer -->
+    </div>
+    <!-- Fim Main -->
+    <!-- Inicio Voltar ao Topo -->
+    <a id="back-to-top" class="rounded-circle" data-bs-toggle="tooltip" title="Voltar ao topo" href="#" aria-label="Voltar ao topo"
+        data-i18n-attr="title:common.backToTop, aria-label:common.backToTop">
+        <i class="fa fa-chevron-up"></i>
+    </a>
+    <!-- Fim Voltar ao Topo -->
+    <!-- Inicio Modal Termos e Política -->
+    <div id="terms-policy" class="modal fade" tabindex="-1" aria-labelledby="terms-policy-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="terms-policy-title" class="modal-title" data-i18n="terms.title">Termos e Política</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" data-i18n-attr="aria-label:common.close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p data-i18n="terms.intro">
+                        Este site é um portfólio pessoal, criado para apresentar meus projetos, minhas experiências
+                        e minhas habilidades como desenvolvedor.
+                    </p>
+                    <h3 class="mb-3 mt-4" data-i18n="terms.useTitle">Termos de Uso</h3>
+                    <p data-i18n="terms.useText">
+                        Você pode navegar e compartilhar os links deste site livremente. Os textos, imagens e
+                        códigos aqui apresentados não devem ser copiados ou redistribuídos como se fossem seus.
+                    </p>
+                    <h3 class="mb-3 mt-4" data-i18n="terms.privacyTitle">Política de Privacidade</h3>
+                    <p data-i18n="terms.privacyIntro">
+                        As informações enviadas pelo formulário de contato são usadas apenas para responder
+                        à sua mensagem.
+                    </p>
+                    <ol class="lh-lg">
+                        <li data-i18n="terms.privacy1">
+                            São coletados os dados que você informa no formulário de contato (nome, e-mail e mensagem)
+                            e, para evitar spam e abusos, o endereço IP, a localização aproximada e o navegador usados no envio.
+                        </li>
+                        <li data-i18n-html="terms.privacy2">
+                            Seus dados não são vendidos, alugados ou compartilhados com terceiros. A mensagem é entregue
+                            por e-mail através do <a href="https://resend.com/legal/privacy-policy" target="_blank">Resend</a>.
+                        </li>
+                        <li data-i18n-html="terms.privacy3">
+                            O formulário é protegido pelo Cloudflare Turnstile, sujeito à
+                            <a href="https://www.cloudflare.com/privacypolicy/" target="_blank">Política de Privacidade</a> e ao
+                            <a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank">Aditivo de Privacidade do Turnstile</a>
+                            da Cloudflare.
+                        </li>
+                        <li data-i18n="terms.privacy4">
+                            As suas preferências de idioma e de tema (claro ou escuro) e o horário do seu último envio pelo
+                            formulário (usado para evitar envios repetidos) ficam salvos apenas no seu navegador.
+                        </li>
+                        <li data-i18n="terms.privacy5">Você pode pedir a exclusão dos seus dados a qualquer momento pelo e-mail lucas_vfsantos@hotmail.com.</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal Termos e Política -->
+    <!-- Inicio Modal Aviso Legal -->
+    <div id="disclaimer" class="modal fade" tabindex="-1" aria-labelledby="disclaimer-title" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="disclaimer-title" class="modal-title" data-i18n="disclaimer.title">Direitos Autorais e Aviso Legal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar" data-i18n-attr="aria-label:common.close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p data-i18n="disclaimer.intro">
+                        Todo o conteúdo deste site pertence a Lucas Santos, exceto quando indicado o contrário.
+                    </p>
+                    <ul class="lh-lg">
+                        <li data-i18n="disclaimer.item1">Os projetos apresentados foram desenvolvidos por mim, individualmente ou em equipe.</li>
+                        <li data-i18n="disclaimer.item2">Marcas, logotipos e nomes de terceiros pertencem aos seus respectivos donos.</li>
+                        <li data-i18n="disclaimer.item3">As informações deste site podem ser atualizadas a qualquer momento, sem aviso prévio.</li>
+                        <li data-i18n="disclaimer.item4">Links para sites externos são oferecidos apenas por conveniência e não sou responsável pelo conteúdo deles.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Fim Modal Aviso Legal -->
+    <!-- JavaScript -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- Easing -->
+    <script src="vendor/jquery.easing/jquery.easing.min.js"></script>
+    <!-- Appear -->
+    <script src="vendor/jquery.appear/jquery.appear.min.js"></script>
+    <!-- Images Loaded -->
+    <script src="vendor/imagesloaded/imagesloaded.pkgd.min.js"></script>
+    <!-- Counter -->
+    <script src="vendor/jquery.countTo/jquery.countTo.min.js"></script>
+    <!-- Parallax Bg -->
+    <script src="vendor/parallaxie/parallaxie.min.js"></script>
+    <!-- Typed -->
+    <script src="vendor/typed/typed.min.js"></script>
+    <!-- Owl Carousel -->
+    <script src="vendor/owl.carousel/owl.carousel.min.js"></script>
+    <!-- isotope Portfolio Filter -->
+    <script src="vendor/isotope/isotope.pkgd.min.js"></script>
+    <!-- Magnific Popup -->
+    <script src="vendor/magnific-popup/jquery.magnific-popup.min.js"></script>
+    <!-- Textos em inglês (o português fica escrito no próprio HTML) -->
+    <script src="./js/i18n-en.js"></script>
+    <!-- Custom Script -->
+    <script src="./js/main.js"></script>
+    <!-- Cloudflare Turnstile (verificação anti-robô do formulário de contato) -->
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&amp;onload=onTurnstileLoad" defer></script>
 </body>
+
 </html>

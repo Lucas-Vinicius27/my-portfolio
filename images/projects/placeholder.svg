@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+    <!-- Imagem provisória: substitua pela capa do projeto (1200 x 630, mesma proporção das miniaturas) -->
+    <rect width="1200" height="630" fill="#2a2f35"/>
+    <g fill="none" stroke="#20c997" stroke-width="20" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="523,231 446,308 523,385"/>
+        <polyline points="677,231 754,308 677,385"/>
+        <line x1="631" y1="210" x2="569" y2="406"/>
+    </g>
+    <text x="600" y="497" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="31" fill="#adb5bd">Imagem do projeto</text>
+</svg>
